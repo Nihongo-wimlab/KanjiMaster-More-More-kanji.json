@@ -1,297 +1,44 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KanjiMaster - More &amp; More</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f1f5f9; }
-    .card-wrap  { perspective: 2000px; cursor: pointer; height: 420px; position: relative; }
-    .card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
-    .card-inner.flipped { transform: rotateY(180deg); }
-    .card-face  { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; padding: 22px; }
-    .card-back  { transform: rotateY(180deg); }
-    .on-bg  { background: #fddf47; border: 8px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.13); }
-    .kun-bg { background: #ef4444; border: 8px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.13); }
-    .app  { min-height: 100vh; background: #f1f5f9; padding: 24px 16px; }
-    .wrap { max-width: 1100px; margin: 0 auto; }
-    .hbox { background: white; border-radius: 28px; padding: 24px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
-    .row  { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 24px; }
-    .sbox { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; }
-    .sbox input { background: transparent; border: none; outline: none; font-weight: 700; color: #334155; font-size: 13px; width: 100%; font-family: inherit; }
-    .fgrp { display: flex; background: #f1f5f9; border-radius: 14px; padding: 4px; gap: 2px; }
-    .fbtn { flex: 1; padding: 8px 14px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-radius: 10px; border: none; cursor: pointer; background: transparent; color: #94a3b8; white-space: nowrap; font-family: inherit; }
-    .f-all { background: white !important;   color: #1e293b !important; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .f-on  { background: #fddf47 !important; color: #78350f !important; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .f-kun { background: #ef4444 !important; color: white !important;   box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .lbox  { display: flex; align-items: center; gap: 8px; background: #f1f5f9; border-radius: 14px; padding: 8px 14px; }
-    .lbox input { width: 44px; text-align: center; background: white; border: none; border-radius: 8px; font-weight: 900; color: #4f46e5; font-size: 13px; padding: 4px 0; outline: none; font-family: inherit; }
-    .badge  { border-radius: 99px; padding: 4px 12px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
-    .addbtn { background: #4f46e5; color: white; border: none; border-radius: 14px; padding: 11px 20px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: inherit; }
-    .addbtn:hover { background: #4338ca; }
-    .overlay { position: fixed; inset: 0; z-index: 100; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; }
-    .modal  { background: white; border-radius: 28px; width: 100%; max-width: 580px; padding: 32px; max-height: 90vh; overflow-y: auto; }
-    .mgrid  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .iblk   { border-radius: 20px; padding: 18px; margin-bottom: 12px; }
-    .inp    { width: 100%; padding: 9px 13px; background: white; border-radius: 12px; font-weight: 700; border: 2px solid transparent; outline: none; font-size: 13px; font-family: inherit; margin-bottom: 8px; resize: vertical; box-sizing: border-box; }
-    .inp:focus { border-color: #6366f1; }
-    .lbl    { display: block; font-size: 8px; font-weight: 900; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; letter-spacing: 0.1em; }
-    .tbtn   { flex: 1; border-radius: 18px; border: 3px solid #e2e8f0; background: white; padding: 16px 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: inherit; opacity: 0.5; }
-    .tbtn.son  { border-color: #fddf47; background: #fefce8; opacity: 1; }
-    .tbtn.skun { border-color: #ef4444; background: #fef2f2; opacity: 1; }
-    .mfoot  { display: flex; gap: 10px; margin-top: 20px; }
-    .bcncl  { flex: 1; padding: 13px 0; background: #f1f5f9; border: none; border-radius: 14px; font-weight: 900; font-size: 10px; text-transform: uppercase; cursor: pointer; font-family: inherit; }
-    .bsave  { flex: 2; padding: 13px 0; background: #4f46e5; color: white; border: none; border-radius: 14px; font-weight: 900; font-size: 10px; text-transform: uppercase; cursor: pointer; font-family: inherit; }
-    .jlink  { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.45); border-radius: 10px; padding: 5px 10px; font-size: 9px; font-weight: 900; text-transform: uppercase; text-decoration: none; }
-    .pill   { background: rgba(255,255,255,0.85); border-radius: 99px; padding: 3px 12px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
-    .iinfo  { background: rgba(255,255,255,0.22); border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; }
-    .micro  { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
-    .cacts  { display: flex; gap: 8px; margin-top: 10px; }
-    .cbtn   { flex: 1; padding: 10px 0; border: none; border-radius: 12px; font-weight: 900; font-size: 9px; text-transform: uppercase; cursor: pointer; font-family: inherit; }
-    .empty  { text-align: center; padding: 80px 0; color: #94a3b8; font-weight: 900; font-size: 13px; text-transform: uppercase; }
-    @media (max-width: 600px) { .mgrid { grid-template-columns: 1fr; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanjimaster More More</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useMemo } = React;
-
-const DATA = [
-  { id:"o1",  kanji:"一", meaning:"Één",           readings:"ICHI",  type:"on",  combination:"一分",    combReading:"Ippun",      combMeaning:"EEN MINUUT",          sentence:"一分待ってください。",              romaji:"Ippun matte kudasai.",                     translation:"Wacht een minuutje alstublieft." },
-  { id:"o2",  kanji:"二", meaning:"Twee",           readings:"NI",    type:"on",  combination:"二月",    combReading:"Nigatsu",    combMeaning:"FEBRUARI",            sentence:"二月は寒いですね。",               romaji:"Nigatsu wa samui desu ne.",                translation:"Februari is koud, hè?" },
-  { id:"o3",  kanji:"三", meaning:"Drie",           readings:"SAN",   type:"on",  combination:"三角",    combReading:"Sankaku",    combMeaning:"DRIEHOEK",            sentence:"三角形を描いてください。",            romaji:"Sankakkei o kaite kudasai.",                translation:"Teken alstublieft een driehoek." },
-  { id:"o4",  kanji:"四", meaning:"Vier",           readings:"SHI",   type:"on",  combination:"四月",    combReading:"Shigatsu",   combMeaning:"APRIL",               sentence:"四月に桜が咲きます。",             romaji:"Shigatsu ni sakura ga sakimasu.",           translation:"In april bloeien de kersenbloesems." },
-  { id:"o5",  kanji:"五", meaning:"Vijf",           readings:"GO",    type:"on",  combination:"五円",    combReading:"Go-en",      combMeaning:"VIJF YEN",            sentence:"五円玉を持っていますか？",            romaji:"Go-en-dama o motte imasu ka?",              translation:"Heb je een vijf-yen-muntje?" },
-  { id:"o6",  kanji:"山", meaning:"Berg",           readings:"SAN",   type:"on",  combination:"火山",    combReading:"Kazan",      combMeaning:"VULKAAN",             sentence:"日本には多くの火山があります。",       romaji:"Nihon ni wa ooku no kazan ga arimasu.",    translation:"In Japan zijn veel vulkanen." },
-  { id:"o7",  kanji:"水", meaning:"Water",          readings:"SUI",   type:"on",  combination:"水曜日",  combReading:"Suiyoubi",   combMeaning:"WOENSDAG",            sentence:"水曜日に会議があります。",            romaji:"Suiyoubi ni kaigi ga arimasu.",             translation:"Op woensdag is er een vergadering." },
-  { id:"o8",  kanji:"火", meaning:"Vuur",           readings:"KA",    type:"on",  combination:"火曜日",  combReading:"Kayoubi",    combMeaning:"DINSDAG",             sentence:"火曜日はバイトがあります。",           romaji:"Kayoubi wa baito ga arimasu.",              translation:"Op dinsdag heb ik een bijbaantje." },
-  { id:"o9",  kanji:"木", meaning:"Boom",           readings:"MOKU",  type:"on",  combination:"木曜日",  combReading:"Mokuyoubi",  combMeaning:"DONDERDAG",           sentence:"木曜日に図書館へ行きます。",           romaji:"Mokuyoubi ni toshokan e ikimasu.",          translation:"Op donderdag ga ik naar de bibliotheek." },
-  { id:"o10", kanji:"金", meaning:"Goud/Geld",      readings:"KIN",   type:"on",  combination:"金曜日",  combReading:"Kin-youbi",  combMeaning:"VRIJDAG",             sentence:"金曜日の夜はパーティーです。",         romaji:"Kin-youbi no yoru wa paatii desu.",         translation:"Vrijdagavond is er een feestje." },
-  { id:"o11", kanji:"土", meaning:"Aarde/Grond",    readings:"DO",    type:"on",  combination:"土曜日",  combReading:"Doyoubi",    combMeaning:"ZATERDAG",            sentence:"土曜日に買い物をします。",            romaji:"Doyoubi ni kaimono o shimasu.",             translation:"Op zaterdag doe ik boodschappen." },
-  { id:"o12", kanji:"学", meaning:"Leren/School",   readings:"GAKU",  type:"on",  combination:"大学",    combReading:"Daigaku",    combMeaning:"UNIVERSITEIT",        sentence:"大学で日本語を勉強しています。",        romaji:"Daigaku de Nihongo o benkyo shite imasu.", translation:"Ik studeer Japans aan de universiteit." },
-  { id:"o13", kanji:"電", meaning:"Elektriciteit",  readings:"DEN",   type:"on",  combination:"電車",    combReading:"Densha",     combMeaning:"TREIN",               sentence:"電車で学校に行きます。",              romaji:"Densha de gakkou ni ikimasu.",              translation:"Ik ga met de trein naar school." },
-  { id:"o14", kanji:"食", meaning:"Eten",           readings:"SHOKU", type:"on",  combination:"食堂",    combReading:"Shokudou",   combMeaning:"KANTINE/RESTAURANT",  sentence:"食堂でランチを食べました。",           romaji:"Shokudou de ranchi o tabemashita.",         translation:"Ik at lunch in de kantine." },
-  { id:"o15", kanji:"語", meaning:"Taal/Woord",     readings:"GO",    type:"on",  combination:"日本語",  combReading:"Nihongo",    combMeaning:"JAPANS (TAAL)",       sentence:"日本語はとても面白いです。",           romaji:"Nihongo wa totemo omoshiroi desu.",         translation:"Japans is heel interessant." },
-  { id:"k1",  kanji:"日", meaning:"Dag/Zon",        readings:"hi",    type:"kun", combination:"日",      combReading:"Hi",         combMeaning:"DE ZON",              sentence:"日が沈みます。",                   romaji:"Hi ga shizumimasu.",                        translation:"De zon gaat onder." },
-  { id:"k2",  kanji:"月", meaning:"Maan/Maand",     readings:"tsuki", type:"kun", combination:"月",      combReading:"Tsuki",      combMeaning:"DE MAAN",             sentence:"今夜は月がきれいです。",              romaji:"Kon-ya wa tsuki ga kirei desu.",            translation:"Vanavond is de maan mooi." },
-  { id:"k3",  kanji:"山", meaning:"Berg",           readings:"yama",  type:"kun", combination:"山道",    combReading:"Yamamichi",  combMeaning:"BERGPAD",             sentence:"山道を歩くのが好きです。",            romaji:"Yamamichi o aruku no ga suki desu.",        translation:"Ik wandel graag over bergpaden." },
-  { id:"k4",  kanji:"川", meaning:"Rivier",         readings:"kawa",  type:"kun", combination:"川岸",    combReading:"Kawagishi",  combMeaning:"RIVIEROEVER",         sentence:"川岸で魚を釣りました。",              romaji:"Kawagishi de sakana o tsurimashita.",       translation:"Ik viste aan de rivieroever." },
-  { id:"k5",  kanji:"木", meaning:"Boom",           readings:"ki",    type:"kun", combination:"木の葉",  combReading:"Ki no ha",   combMeaning:"BLAD VAN EEN BOOM",   sentence:"木の葉が風に揺れています。",           romaji:"Ki no ha ga kaze ni yurete imasu.",         translation:"De bladeren wiegelen in de wind." },
-  { id:"k6",  kanji:"花", meaning:"Bloem",          readings:"hana",  type:"kun", combination:"花見",    combReading:"Hanami",     combMeaning:"BLOESEMS BEKIJKEN",   sentence:"春に花見をしましょう。",              romaji:"Haru ni hanami o shimashou.",               translation:"Laten we in de lente naar de bloesems kijken." },
-  { id:"k7",  kanji:"雨", meaning:"Regen",          readings:"ame",   type:"kun", combination:"雨降り",  combReading:"Amefuri",    combMeaning:"REGENVAL",            sentence:"雨降りの日は家にいます。",            romaji:"Amefuri no hi wa ie ni imasu.",             translation:"Op regenachtige dagen blijf ik thuis." },
-  { id:"k8",  kanji:"空", meaning:"Lucht/Hemel",    readings:"sora",  type:"kun", combination:"青空",    combReading:"Aozora",     combMeaning:"BLAUWE HEMEL",        sentence:"青空の下でピクニックをします。",        romaji:"Aozora no shita de pikunikku o shimasu.",  translation:"We picknicken onder een blauwe hemel." },
-  { id:"k9",  kanji:"海", meaning:"Zee",            readings:"umi",   type:"kun", combination:"海辺",    combReading:"Umibe",      combMeaning:"ZEEKUST",             sentence:"海辺で貝を拾いました。",              romaji:"Umibe de kai o hiroimashita.",              translation:"Ik raapte schelpen op aan de kust." },
-  { id:"k10", kanji:"人", meaning:"Persoon/Mens",   readings:"hito",  type:"kun", combination:"一人",    combReading:"Hitori",     combMeaning:"ALLEEN / EEN PERSOON",sentence:"一人で旅行するのが好きです。",          romaji:"Hitori de ryokou suru no ga suki desu.",   translation:"Ik reis graag alleen." },
-  { id:"k11", kanji:"手", meaning:"Hand",           readings:"te",    type:"kun", combination:"手紙",    combReading:"Tegami",     combMeaning:"BRIEF",               sentence:"おばあちゃんに手紙を書きました。",      romaji:"Obaachan ni tegami o kakimashita.",         translation:"Ik schreef een brief aan mijn oma." },
-  { id:"k12", kanji:"目", meaning:"Oog",            readings:"me",    type:"kun", combination:"目玉焼き", combReading:"Medamayaki", combMeaning:"SPIEGELEIEREN",       sentence:"目玉焼きが大好きです。",              romaji:"Medamayaki ga daisuki desu.",               translation:"Ik hou heel veel van spiegeleieren." },
-  { id:"k13", kanji:"犬", meaning:"Hond",           readings:"inu",   type:"kun", combination:"子犬",    combReading:"Koinu",      combMeaning:"PUPPY",               sentence:"子犬がとてもかわいいです。",           romaji:"Koinu ga totemo kawaii desu.",              translation:"De puppy is heel schattig." },
-  { id:"k14", kanji:"猫", meaning:"Kat",            readings:"neko",  type:"kun", combination:"猫の手",  combReading:"Neko no te", combMeaning:"KATTENPOOT",          sentence:"今日は猫の手も借りたいほど忙しい。",    romaji:"Kyou wa neko no te mo karitai hodo isogashii.", translation:"Vandaag ben ik zo druk dat ik zelfs een kattenpoot zou lenen." },
-  { id:"k15", kanji:"道", meaning:"Weg/Pad",        readings:"michi", type:"kun", combination:"近道",    combReading:"Chikamichi", combMeaning:"KORTERE WEG",         sentence:"近道を知っていますか？",              romaji:"Chikamichi o shitte imasu ka?",             translation:"Ken jij een kortere weg?" },
-];
-
-const EMPTY = { id:"", kanji:"", meaning:"", readings:"", type:"on", combination:"", combReading:"", combMeaning:"", sentence:"", romaji:"", translation:"" };
-
-function App() {
-  const [db, setDb]           = useState(DATA);
-  const [flipped, setFlipped] = useState([]);
-  const [search, setSearch]   = useState("");
-  const [filter, setFilter]   = useState("all");
-  const [limit, setLimit]     = useState(30);
-  const [modal, setModal]     = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [cur, setCur]         = useState(EMPTY);
-
-  const filtered = useMemo(() => {
-    let list = filter === "all" ? db : db.filter(i => i.type === filter);
-    if (search) {
-      const s = search.toLowerCase();
-      list = list.filter(i => Object.values(i).some(v => v && v.toString().toLowerCase().includes(s)));
-    }
-    return list.slice(0, limit);
-  }, [db, search, filter, limit]);
-
-  const toggleFlip = id => setFlipped(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const openAdd    = () => { setCur(EMPTY); setEditing(false); setModal(true); };
-  const openEdit   = item => { setCur({...item}); setEditing(true); setModal(true); };
-  const save = () => {
-    if (!cur.kanji || !cur.combination) return;
-    const item = editing ? cur : {...cur, id: Date.now().toString()};
-    setDb(p => editing ? p.map(i => i.id === item.id ? item : i) : [item, ...p]);
-    setModal(false);
-  };
-
-  const onCnt  = db.filter(i => i.type === "on").length;
-  const kunCnt = db.filter(i => i.type === "kun").length;
-
-  return (
-    <div className="app">
-      <div className="wrap">
-
-        {/* HEADER */}
-        <div className="hbox">
-          <div className="row" style={{justifyContent:"space-between", marginBottom:20}}>
-            <div className="row">
-              <div style={{width:48,height:48,background:"#4f46e5",borderRadius:16,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 14px rgba(79,70,229,0.35)"}}>
-                <svg width="22" height="22" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-              </div>
-              <div>
-                <div style={{fontSize:18,fontWeight:900,textTransform:"uppercase",letterSpacing:"-0.02em"}}>KanjiMaster</div>
-                <div style={{fontSize:9,fontWeight:900,color:"#818cf8",textTransform:"uppercase",letterSpacing:"0.12em"}}>More &amp; More &middot; {db.length} kanji</div>
-              </div>
-            </div>
-            <div className="row" style={{gap:8}}>
-              <span className="badge" style={{background:"#fef9c3",color:"#92400e"}}>On: {onCnt}</span>
-              <span className="badge" style={{background:"#fee2e2",color:"#991b1b"}}>Kun: {kunCnt}</span>
-              <button className="addbtn" onClick={openAdd}>
-                <svg width="14" height="14" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" viewBox="0 0 24 24">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Voeg Kanji Toe
-              </button>
-            </div>
-          </div>
-          <div className="row">
-            <div className="sbox">
-              <svg width="16" height="16" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input placeholder="Zoek kanji, lezing, betekenis..." value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-            <div className="fgrp">
-              <button className={"fbtn" + (filter==="all" ? " f-all" : "")} onClick={() => setFilter("all")}>Alles</button>
-              <button className={"fbtn" + (filter==="on"  ? " f-on"  : "")} onClick={() => setFilter("on")}>On</button>
-              <button className={"fbtn" + (filter==="kun" ? " f-kun" : "")} onClick={() => setFilter("kun")}>Kun</button>
-            </div>
-            <div className="lbox">
-              <span style={{fontSize:9,fontWeight:900,textTransform:"uppercase",color:"#94a3b8"}}>Limit:</span>
-              <input type="number" value={limit} onChange={e => setLimit(Number(e.target.value))} />
-            </div>
-          </div>
+    <div class="container">
+        <div class="left-panel">
+            <h2>Kanji Lijst</h2>
+            <div id="kanjiList" class="kanji-list"></div>
         </div>
 
-        {/* GRID */}
-        <div className="grid">
-          {filtered.map(item => {
-            const isOn  = item.type === "on";
-            const fg    = isOn ? "#1e293b" : "white";
-            const fgS   = isOn ? "rgba(30,41,59,0.65)" : "rgba(255,255,255,0.7)";
-            const jCol  = isOn ? "#78350f" : "white";
-            const isFlp = flipped.includes(item.id);
-            const jHref = "https://jisho.org/search/" + encodeURIComponent(item.kanji) + "%20%23kanji";
-            return (
-              <div key={item.id} className="card-wrap" style={{zIndex: isFlp ? 50 : "auto"}} onClick={() => toggleFlip(item.id)}>
-                <div className={"card-inner" + (isFlp ? " flipped" : "")}>
+        <div class="right-panel">
+            <h2>Kanji Toevoegen</h2>
+            <div class="input-group">
+                <label for="kanjiInput">Kanji:</label>
+                <input type="text" id="kanjiInput" maxlength="1">
+            </div>
 
-                  {/* FRONT */}
-                  <div className={"card-face " + (isOn ? "on-bg" : "kun-bg")} style={{alignItems:"center",justifyContent:"center",textAlign:"center"}}>
-                    <div style={{position:"absolute",top:14,left:14,right:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <span className="pill" style={{color: isOn ? "#92400e" : "#991b1b"}}>{isOn ? "On-yomi" : "Kun-yomi"}</span>
-                      <a href={jHref} target="_blank" rel="noopener noreferrer" className="jlink" style={{color:jCol}} onClick={e => e.stopPropagation()}>
-                        <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        Jisho
-                      </a>
-                    </div>
-                    <div style={{fontSize:68,fontWeight:900,color:fg,lineHeight:1}}>{item.combination}</div>
-                    <div style={{marginTop:18,background:"rgba(255,255,255,0.22)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:16,padding:"12px 16px",width:"100%"}}>
-                      <p style={{fontSize:14,fontWeight:700,color:fg,margin:0}}>{item.sentence}</p>
-                    </div>
-                  </div>
+            <div class="input-group">
+                <label for="meaningInput">Betekenis:</label>
+                <input type="text" id="meaningInput">
+            </div>
 
-                  {/* BACK */}
-                  <div className={"card-face card-back " + (isOn ? "on-bg" : "kun-bg")} style={{justifyContent:"space-between"}}>
-                    <div>
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-                        <div style={{fontSize:28,fontWeight:900,color:fg}}>{item.combination}</div>
-                        <a href={jHref} target="_blank" rel="noopener noreferrer" className="jlink" style={{color:jCol}} onClick={e => e.stopPropagation()}>
-                          <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                          Jisho
-                        </a>
-                      </div>
-                      <div style={{fontSize:16,fontWeight:700,color:fgS}}>{item.combReading}</div>
-                      <div style={{fontSize:9,fontWeight:900,textTransform:"uppercase",letterSpacing:"0.1em",color:fgS,marginBottom:12}}>{item.combMeaning}</div>
-                      <div className="iinfo">
-                        <div className="micro" style={{color:fgS}}>Lezing</div>
-                        <div style={{fontSize:18,fontWeight:900,color:fg}}>{item.readings}</div>
-                      </div>
-                      <div className="iinfo" style={{marginBottom:0}}>
-                        <div className="micro" style={{color:fgS}}>Vertaling</div>
-                        <div style={{fontSize:12,fontWeight:700,color:fg,marginBottom:2}}>{item.sentence}</div>
-                        <div style={{fontSize:11,color:fgS,marginBottom:2}}>{item.romaji}</div>
-                        <div style={{fontSize:11,color:fgS,fontStyle:"italic"}}>{item.translation}</div>
-                      </div>
-                    </div>
-                    <div className="cacts">
-                      <button className="cbtn" style={{background:"#4f46e5",color:"white"}} onClick={e => { e.stopPropagation(); openEdit(item); }}>Edit</button>
-                      <button className="cbtn" style={{background:"#7f1d1d",color:"white"}} onClick={e => { e.stopPropagation(); setDb(db.filter(i => i.id !== item.id)); }}>Wis</button>
-                    </div>
-                  </div>
+            <button id="addButton" class="add-button">Voeg toe</button>
 
-                </div>
-              </div>
-            );
-          })}
+            <h2>Geselecteerde Kanji</h2>
+            <div id="selectedKanji" class="selected-kanji"></div>
         </div>
-        {filtered.length === 0 && <div className="empty">Geen kanji gevonden</div>}
-      </div>
-
-      {/* MODAL */}
-      {modal && (
-        <div className="overlay">
-          <div className="modal">
-            <div style={{fontSize:20,fontWeight:900,textTransform:"uppercase",color:"#4f46e5",textAlign:"center",marginBottom:24}}>
-              {editing ? "Kaart Bewerken" : "Nieuwe Kanji"}
-            </div>
-            <div style={{display:"flex",gap:12,marginBottom:24}}>
-              <button className={"tbtn" + (cur.type==="on"  ? " son"  : "")} onClick={() => setCur({...cur, type:"on"})}>
-                <div style={{width:14,height:14,borderRadius:99,background:"#fddf47"}}/>
-                <span style={{fontSize:9,fontWeight:900,textTransform:"uppercase",color:"#92400e"}}>On-yomi (Geel)</span>
-              </button>
-              <button className={"tbtn" + (cur.type==="kun" ? " skun" : "")} onClick={() => setCur({...cur, type:"kun"})}>
-                <div style={{width:14,height:14,borderRadius:99,background:"#ef4444"}}/>
-                <span style={{fontSize:9,fontWeight:900,textTransform:"uppercase",color:"#991b1b"}}>Kun-yomi (Rood)</span>
-              </button>
-            </div>
-            <div className="mgrid">
-              <div>
-                <div className="iblk" style={{background:"#f8fafc"}}>
-                  <label className="lbl">Basis Kanji &amp; Lezing</label>
-                  <input  className="inp" placeholder="Bijv. 二"   value={cur.kanji}    onChange={e => setCur({...cur, kanji:e.target.value})} />
-                  <input  className="inp" placeholder="Bijv. NI"   value={cur.readings} onChange={e => setCur({...cur, readings:e.target.value})} />
-                </div>
-                <div className="iblk" style={{background:"#eef2ff"}}>
-                  <label className="lbl">Woord Combinatie</label>
-                  <input    className="inp" placeholder="Bijv. 二月"  value={cur.combination} onChange={e => setCur({...cur, combination:e.target.value})} />
-                  <input    className="inp" placeholder="Lezing"       value={cur.combReading} onChange={e => setCur({...cur, combReading:e.target.value})} />
-                  <input    className="inp" placeholder="Betekenis"    value={cur.combMeaning} onChange={e => setCur({...cur, combMeaning:e.target.value})} />
-                </div>
-              </div>
-              <div className="iblk" style={{background:"#ecfdf5",marginBottom:0,display:"flex",flexDirection:"column"}}>
-                <label className="lbl">Voorbeeld &amp; Vertaling</label>
-                <textarea className="inp" placeholder="Japanse zin..."            value={cur.sentence}    onChange={e => setCur({...cur, sentence:e.target.value})} />
-                <input    className="inp" placeholder="Romaji..."                 value={cur.romaji}      onChange={e => setCur({...cur, romaji:e.target.value})} />
-                <textarea className="inp" placeholder="Nederlandse vertaling..."  value={cur.translation} onChange={e => setCur({...cur, translation:e.target.value})} />
-              </div>
-            </div>
-            <div className="mfoot">
-              <button className="bcncl" onClick={() => setModal(false)}>Sluiten</button>
-              <button className="bsave" onClick={save}>Kaart Opslaan</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  );
-}
+    <!-- Exportknop onderaan de pagina -->
+    <div style="margin-top: 40px; text-align: center;">
+        <button id="exportButton">Exporteer lokale kanji</button>
+    </div>
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-</script>
+    <!-- Script.js verplaatst naar de onderkant (best practice) -->
+    <script src="script.js"></script>
+
 </body>
 </html>
