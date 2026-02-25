@@ -1,14 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KanjiMaster - More & More</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KanjiMaster – More & More</title>
 
     <!-- React + Babel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
+    <!-- JOUW DATA-BESTAND -->
+    <script src="kanji-data.js"></script>
 
     <style>
         *, *::before, *::after {
@@ -20,52 +24,6 @@
         body {
             font-family: sans-serif;
             background: #f1f5f9;
-        }
-
-        .card-wrap {
-            perspective: 2000px;
-            cursor: pointer;
-            height: 420px;
-            position: relative;
-        }
-
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        .card-inner.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            inset: 0;
-            backface-visibility: hidden;
-            border-radius: 28px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 22px;
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
-        .on-bg {
-            background: #fddf47;
-            border: 8px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
-        }
-
-        .kun-bg {
-            background: #ef4444;
-            border: 8px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
         }
 
         .app {
@@ -94,11 +52,6 @@
             flex-wrap: wrap;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
-            gap: 24px;
-        }
         .sbox {
             flex: 1;
             min-width: 180px;
@@ -163,27 +116,56 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         }
 
-        .lbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #f1f5f9;
-            border-radius: 14px;
-            padding: 8px 14px;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+            gap: 24px;
         }
 
-        .lbox input {
-            width: 44px;
-            text-align: center;
-            background: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 900;
-            color: #4f46e5;
-            font-size: 13px;
-            padding: 4px 0;
-            outline: none;
-            font-family: inherit;
+        .card-wrap {
+            perspective: 2000px;
+            cursor: pointer;
+            height: 420px;
+            position: relative;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 22px;
+        }
+
+        .on-bg {
+            background: #fddf47;
+            border: 8px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+        }
+
+        .kun-bg {
+            background: #ef4444;
+            border: 8px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
         }
 
         .badge {
@@ -214,175 +196,29 @@
         .addbtn:hover {
             background: #4338ca;
         }
-
-        .overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(15,23,42,0.6);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 580px;
-            padding: 32px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .mgrid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .iblk {
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 12px;
-        }
-
-        .inp {
-            width: 100%;
-            padding: 9px 13px;
-            background: white;
-            border-radius: 12px;
-            font-weight: 700;
-            border: 2px solid transparent;
-            outline: none;
-            font-size: 13px;
-            font-family: inherit;
-            margin-bottom: 8px;
-            resize: vertical;
-        }
-
-        .inp:focus {
-            border-color: #6366f1;
-        }
-
-        .lbl {
-            display: block;
-            font-size: 8px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #94a3b8;
-            margin-bottom: 8px;
-            letter-spacing: 0.1em;
-        }
-
-        .tbtn {
-            flex: 1;
-            border-radius: 18px;
-            border: 3px solid #e2e8f0;
-            background: white;
-            padding: 16px 8px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            font-family: inherit;
-            opacity: 0.5;
-        }
-
-        .tbtn.son {
-            border-color: #fddf47;
-            background: #fefce8;
-            opacity: 1;
-        }
-
-        .tbtn.skun {
-            border-color: #ef4444;
-            background: #fef2f2;
-            opacity: 1;
-        }
-
-        .mfoot {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .bcncl {
-            flex: 1;
-            padding: 13px 0;
-            background: #f1f5f9;
-            border: none;
-            border-radius: 14px;
-            font-weight: 900;
-            font-size: 10px;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .bsave {
-            flex: 2;
-            padding: 13px 0;
-            background: #4f46e5;
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-weight: 900;
-            font-size: 10px;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 80px 0;
-            color: #94a3b8;
-            font-weight: 900;
-            font-size: 13px;
-            text-transform: uppercase;
-        }
-
-        @media (max-width: 600px) {
-            .mgrid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 
 <body>
     <div id="root"></div>
-
     <script type="text/babel">
         const { useState, useMemo } = React;
-        const DATA = [
-            { id:"o1", kanji:"一", meaning:"Één", readings:"ICHI", type:"on",
-              combination:"一分", combReading:"Ippun", combMeaning:"EEN MINUUT",
-              sentence:"一分待ってください。", romaji:"Ippun matte kudasai.",
-              translation:"Wacht een minuutje alstublieft." },
 
-            { id:"o2", kanji:"二", meaning:"Twee", readings:"NI", type:"on",
-              combination:"二月", combReading:"Nigatsu", combMeaning:"FEBRUARI",
-              sentence:"二月は寒いですね。", romaji:"Nigatsu wa samui desu ne.",
-              translation:"Februari is koud, hè?" },
-
-            { id:"o3", kanji:"三", meaning:"Drie", readings:"SAN", type:"on",
-              combination:"三角", combReading:"Sankaku", combMeaning:"DRIEHOEK",
-              sentence:"三角形を描いてください。", romaji:"Sankakkei o kaite kudasai.",
-              translation:"Teken alstublieft een driehoek." },
-
-            <!-- … alle overige items blijven exact zoals jij ze stuurde … -->
-
-        ];
+        // DATA komt uit kanji-data.js
+        // DATA is nu een globale variabele
 
         const EMPTY = {
-            id:"", kanji:"", meaning:"", readings:"", type:"on",
-            combination:"", combReading:"", combMeaning:"",
-            sentence:"", romaji:"", translation:""
+            id: "",
+            kanji: "",
+            meaning: "",
+            readings: "",
+            type: "on",
+            combination: "",
+            combReading: "",
+            combMeaning: "",
+            sentence: "",
+            romaji: "",
+            translation: ""
         };
 
         function App() {
@@ -390,13 +226,16 @@
             const [flipped, setFlipped] = useState([]);
             const [search, setSearch]   = useState("");
             const [filter, setFilter]   = useState("all");
-            const [limit, setLimit]     = useState(30);
+            const [limit, setLimit]     = useState(100);
             const [modal, setModal]     = useState(false);
             const [editing, setEditing] = useState(false);
             const [cur, setCur]         = useState(EMPTY);
 
             const filtered = useMemo(() => {
-                let list = filter === "all" ? db : db.filter(i => i.type === filter);
+                let list = filter === "all"
+                    ? db
+                    : db.filter(i => i.type === filter);
+
                 if (search) {
                     const s = search.toLowerCase();
                     list = list.filter(i =>
@@ -405,25 +244,42 @@
                         )
                     );
                 }
+
                 return list.slice(0, limit);
             }, [db, search, filter, limit]);
 
             const toggleFlip = id =>
-                setFlipped(p => p.includes(id)
-                    ? p.filter(x => x !== id)
-                    : [...p, id]
+                setFlipped(p =>
+                    p.includes(id)
+                        ? p.filter(x => x !== id)
+                        : [...p, id]
                 );
 
-            const openAdd  = () => { setCur(EMPTY); setEditing(false); setModal(true); };
-            const openEdit = item => { setCur({...item}); setEditing(true); setModal(true); };
+            const openAdd = () => {
+                setCur(EMPTY);
+                setEditing(false);
+                setModal(true);
+            };
+
+            const openEdit = item => {
+                setCur({ ...item });
+                setEditing(true);
+                setModal(true);
+            };
 
             const save = () => {
                 if (!cur.kanji || !cur.combination) return;
-                const item = editing ? cur : { ...cur, id: Date.now().toString() };
-                setDb(p => editing
-                    ? p.map(i => i.id === item.id ? item : i)
-                    : [item, ...p]
+
+                const item = editing
+                    ? cur
+                    : { ...cur, id: Date.now().toString() };
+
+                setDb(p =>
+                    editing
+                        ? p.map(i => i.id === item.id ? item : i)
+                        : [item, ...p]
                 );
+
                 setModal(false);
             };
 
@@ -526,212 +382,425 @@
 
                                     <button
                                         className={"fbtn" + (filter==="kun" ? " f-kun" : "")}
-                                        {/* BACK */}
-                                        <div
-                                            className={
-                                                "card-face card-back " +
-                                                (isOn ? "on-bg" : "kun-bg")
-                                            }
-                                            style={{ justifyContent: "space-between" }}
-                                        >
-                                            <div>
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        alignItems: "flex-start",
-                                                        marginBottom: 4
-                                                    }}
-                                                >
+                                        onClick={() => setFilter("kun")}
+                                    >
+                                        Kun
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {/* KAARTEN */}
+                        <div className="grid">
+                            {filtered.map(item => {
+                                const isOn  = item.type === "on";
+                                const fg    = isOn ? "#78350f" : "white";
+                                const fgS   = isOn ? "#92400e" : "#fee2e2";
+                                const jCol  = isOn ? "#78350f" : "white";
+                                const jHref = `https://jisho.org/search/${item.kanji}`;
+
+                                return (
+                                    <div
+                                        key={item.id}
+                                        className="card-wrap"
+                                        onClick={() => toggleFlip(item.id)}
+                                    >
+                                        <div className={
+                                            "card-inner " +
+                                            (flipped.includes(item.id) ? "flipped" : "")
+                                        }>
+
+                                            {/* FRONT */}
+                                            <div
+                                                className={
+                                                    "card-face " +
+                                                    (isOn ? "on-bg" : "kun-bg")
+                                                }
+                                                style={{ justifyContent:"space-between" }}
+                                            >
+                                                <div>
                                                     <div
                                                         style={{
-                                                            fontSize: 28,
-                                                            fontWeight: 900,
-                                                            color: fg
+                                                            display:"flex",
+                                                            justifyContent:"space-between",
+                                                            alignItems:"flex-start",
+                                                            marginBottom:4
                                                         }}
                                                     >
-                                                        {item.combination}
-                                                    </div>
-
-                                                    <a
-                                                        href={jHref}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="jlink"
-                                                        style={{ color: jCol }}
-                                                        onClick={e => e.stopPropagation()}
-                                                    >
-                                                        <svg
-                                                            width="11"
-                                                            height="11"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="3"
-                                                            strokeLinecap="round"
-                                                            viewBox="0 0 24 24"
+                                                        <div
+                                                            style={{
+                                                                fontSize:64,
+                                                                fontWeight:900,
+                                                                color:fg
+                                                            }}
                                                         >
-                                                            <circle cx="11" cy="11" r="8" />
-                                                            <line
-                                                                x1="21"
-                                                                y1="21"
-                                                                x2="16.65"
-                                                                y2="16.65"
-                                                            />
-                                                        </svg>
-                                                        Jisho
-                                                    </a>
-                                                </div>
+                                                            {item.kanji}
+                                                        </div>
 
-                                                <div
-                                                    style={{
-                                                        fontSize: 16,
-                                                        fontWeight: 700,
-                                                        color: fgS
-                                                    }}
-                                                >
-                                                    {item.combReading}
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        fontSize: 9,
-                                                        fontWeight: 900,
-                                                        textTransform: "uppercase",
-                                                        letterSpacing: "0.1em",
-                                                        color: fgS,
-                                                        marginBottom: 12
-                                                    }}
-                                                >
-                                                    {item.combMeaning}
-                                                </div>
-
-                                                <div className="iinfo">
-                                                    <div className="micro" style={{ color: fgS }}>
-                                                        Lezing
-                                                    </div>
-                                                    <div
-                                                        style={{
-                                                            fontSize: 18,
-                                                            fontWeight: 900,
-                                                            color: fg
-                                                        }}
-                                                    >
-                                                        {item.readings}
-                                                    </div>
-                                                </div>
-
-                                                <div className="iinfo" style={{ marginBottom: 0 }}>
-                                                    <div className="micro" style={{ color: fgS }}>
-                                                        Vertaling
+                                                        <a
+                                                            href={jHref}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="jlink"
+                                                            style={{ color:jCol }}
+                                                            onClick={e => e.stopPropagation()}
+                                                        >
+                                                            <svg
+                                                                width="11"
+                                                                height="11"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="3"
+                                                                strokeLinecap="round"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <circle cx="11" cy="11" r="8" />
+                                                                <line
+                                                                    x1="21"
+                                                                    y1="21"
+                                                                    x2="16.65"
+                                                                    y2="16.65"
+                                                                />
+                                                            </svg>
+                                                            Jisho
+                                                        </a>
                                                     </div>
 
                                                     <div
                                                         style={{
-                                                            fontSize: 12,
-                                                            fontWeight: 700,
-                                                            color: fg,
-                                                            marginBottom: 2
+                                                            fontSize:18,
+                                                            fontWeight:900,
+                                                            color:fg
                                                         }}
                                                     >
-                                                        {item.sentence}
+                                                        {item.meaning}
+                                                    </div>
+                                                </div>
+
+                                                <div className="cacts">
+                                                    <button
+                                                        className="cbtn"
+                                                        style={{
+                                                            background:"#4f46e5",
+                                                            color:"white"
+                                                        }}
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                            openEdit(item);
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        className="cbtn"
+                                                        style={{
+                                                            background:"#7f1d1d",
+                                                            color:"white"
+                                                        }}
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                            setDb(db.filter(i => i.id !== item.id));
+                                                        }}
+                                                    >
+                                                        Wis
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* BACK */}
+                                            <div
+                                                className={
+                                                    "card-face card-back " +
+                                                    (isOn ? "on-bg" : "kun-bg")
+                                                }
+                                                style={{ justifyContent:"space-between" }}
+                                            >
+                                                <div>
+                                                    <div
+                                                        style={{
+                                                            display:"flex",
+                                                            justifyContent:"space-between",
+                                                            alignItems:"flex-start",
+                                                            marginBottom:4
+                                                        }}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                fontSize:28,
+                                                                fontWeight:900,
+                                                                color:fg
+                                                            }}
+                                                        >
+                                                            {item.combination}
+                                                        </div>
+
+                                                        <a
+                                                            href={jHref}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="jlink"
+                                                            style={{ color:jCol }}
+                                                            onClick={e => e.stopPropagation()}
+                                                        >
+                                                            <svg
+                                                                width="11"
+                                                                height="11"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="3"
+                                                                strokeLinecap="round"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <circle cx="11" cy="11" r="8" />
+                                                                <line
+                                                                    x1="21"
+                                                                    y1="21"
+                                                                    x2="16.65"
+                                                                    y2="16.65"
+                                                                />
+                                                            </svg>
+                                                            Jisho
+                                                        </a>
                                                     </div>
 
                                                     <div
                                                         style={{
-                                                            fontSize: 11,
-                                                            color: fgS,
-                                                            marginBottom: 2
+                                                            fontSize:16,
+                                                            fontWeight:700,
+                                                            color:fgS
                                                         }}
                                                     >
-                                                        {item.romaji}
+                                                        {item.combReading}
                                                     </div>
 
                                                     <div
                                                         style={{
-                                                            fontSize: 11,
-                                                            color: fgS,
-                                                            fontStyle: "italic"
+                                                            fontSize:9,
+                                                            fontWeight:900,
+                                                            textTransform:"uppercase",
+                                                            letterSpacing:"0.1em",
+                                                            color:fgS,
+                                                            marginBottom:12
                                                         }}
                                                     >
-                                                        {item.translation}
+                                                        {item.combMeaning}
+                                                    </div>
+
+                                                    <div className="iinfo">
+                                                        <div className="micro" style={{ color:fgS }}>
+                                                            Lezing
+                                                        </div>
+                                                        <div
+                                                            style={{
+                                                                fontSize:18,
+                                                                fontWeight:900,
+                                                                color:fg
+                                                            }}
+                                                        >
+                                                            {item.readings}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="iinfo" style={{ marginBottom:0 }}>
+                                                        <div className="micro" style={{ color:fgS }}>
+                                                            Vertaling
+                                                        </div>
+
+                                                        <div
+                                                            style={{
+                                                                fontSize:12,
+                                                                fontWeight:700,
+                                                                color:fg,
+                                                                marginBottom:2
+                                                            }}
+                                                        >
+                                                            {item.sentence}
+                                                        </div>
+
+                                                        <div
+                                                            style={{
+                                                                fontSize:11,
+                                                                color:fgS,
+                                                                marginBottom:2
+                                                            }}
+                                                        >
+                                                            {item.romaji}
+                                                        </div>
+
+                                                        <div
+                                                            style={{
+                                                                fontSize:11,
+                                                                color:fgS,
+                                                                fontStyle:"italic"
+                                                            }}
+                                                        >
+                                                            {item.translation}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="cacts">
-                                                <button
-                                                    className="cbtn"
-                                                    style={{
-                                                        background: "#4f46e5",
-                                                        color: "white"
-                                                    }}
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                        openEdit(item);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-
-                                                <button
-                                                    className="cbtn"
-                                                    style={{
-                                                        background: "#7f1d1d",
-                                                        color: "white"
-                                                    }}
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                        setDb(db.filter(i => i.id !== item.id));
-                                                    }}
-                                                >
-                                                    Wis
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
 
-                    {filtered.length === 0 && (
-                        <div className="empty">Geen kanji gevonden</div>
-                    )}
-                </div>
-
-                {/* MODAL */}
-                {modal && (
-                    <div className="overlay">
-                        <div className="modal">
-                            <div
-                                style={{
-                                    fontSize: 20,
-                                    fontWeight: 900,
-                                    textTransform: "uppercase",
-                                    color: "#4f46e5",
-                                    textAlign: "center",
-                                    marginBottom: 24
-                                }}
-                            >
-                                {editing ? "Kaart Bewerken" : "Nieuwe Kanji"}
-                            </div>
-
-                            <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-                                <button
-                                    className={"tbtn" + (cur.type === "on" ? " son" : "")}
-                                    onClick={() => setCur({ ...cur, type: "on" })}
-                                >
+                        {filtered.length === 0 && (
+                            <div className="empty">Geen kanji gevonden</div>
+                        )}
+                        {/* MODAL */}
+                        {modal && (
+                            <div className="overlay">
+                                <div className="modal">
                                     <div
                                         style={{
-                                            width: 14,
-                                            height: 14,
-                                            borderRadius: 99,
-                                            background: "#fddf47"
-                                        }}
-                                    />
-                                    <span
-                                        style={{
-                                            fontSize: 9,
+                                            fontSize: 20,
                                             fontWeight: 900,
                                             textTransform: "uppercase",
-                                            color: "#92400e
+                                            color: "#4f46e5",
+                                            textAlign: "center",
+                                            marginBottom: 24
+                                        }}
+                                    >
+                                        {editing ? "Kaart Bewerken" : "Nieuwe Kanji"}
+                                    </div>
+
+                                    {/* TYPE SELECTIE */}
+                                    <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+                                        <button
+                                            className={"tbtn" + (cur.type === "on" ? " son" : "")}
+                                            onClick={() => setCur({ ...cur, type: "on" })}
+                                        >
+                                            <div
+                                                style={{
+                                                    width: 14,
+                                                    height: 14,
+                                                    borderRadius: 99,
+                                                    background: "#fddf47"
+                                                }}
+                                            />
+                                            <span
+                                                style={{
+                                                    fontSize: 9,
+                                                    fontWeight: 900,
+                                                    textTransform: "uppercase",
+                                                    color: "#92400e"
+                                                }}
+                                            >
+                                                On
+                                            </span>
+                                        </button>
+
+                                        <button
+                                            className={"tbtn" + (cur.type === "kun" ? " skun" : "")}
+                                            onClick={() => setCur({ ...cur, type: "kun" })}
+                                        >
+                                            <div
+                                                style={{
+                                                    width: 14,
+                                                    height: 14,
+                                                    borderRadius: 99,
+                                                    background: "#ef4444"
+                                                }}
+                                            />
+                                            <span
+                                                style={{
+                                                    fontSize: 9,
+                                                    fontWeight: 900,
+                                                    textTransform: "uppercase",
+                                                    color: "white"
+                                                }}
+                                            >
+                                                Kun
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    {/* FORM FIELDS */}
+                                    <label className="lbl">Kanji</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.kanji}
+                                        onChange={e => setCur({ ...cur, kanji: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Betekenis</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.meaning}
+                                        onChange={e => setCur({ ...cur, meaning: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Lezingen</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.readings}
+                                        onChange={e => setCur({ ...cur, readings: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Combinatie</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.combination}
+                                        onChange={e => setCur({ ...cur, combination: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Combinatie Lezing</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.combReading}
+                                        onChange={e => setCur({ ...cur, combReading: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Combinatie Betekenis</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.combMeaning}
+                                        onChange={e => setCur({ ...cur, combMeaning: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Voorbeeldzin</label>
+                                    <textarea
+                                        className="inp"
+                                        value={cur.sentence}
+                                        onChange={e => setCur({ ...cur, sentence: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Romaji</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.romaji}
+                                        onChange={e => setCur({ ...cur, romaji: e.target.value })}
+                                    />
+
+                                    <label className="lbl">Vertaling</label>
+                                    <input
+                                        className="inp"
+                                        value={cur.translation}
+                                        onChange={e => setCur({ ...cur, translation: e.target.value })}
+                                    />
+
+                                    {/* FOOTER BUTTONS */}
+                                    <div className="mfoot">
+                                        <button className="bcncl" onClick={() => setModal(false)}>
+                                            Annuleer
+                                        </button>
+
+                                        <button className="bsave" onClick={save}>
+                                            Opslaan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+</body>
+</html>
